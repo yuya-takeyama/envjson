@@ -20,6 +20,10 @@ func main() {
 		os.Exit(ExitFatal)
 	}
 
+	if len(os.Args) < 2 {
+		usage()
+	}
+
 	path := os.Args[1]
 	args := os.Args[2:]
 	cmd := commandWithEnv(path, args, env)
@@ -74,4 +78,9 @@ func commandWithEnv(path string, args []string, env []string) *exec.Cmd {
 	cmd.Stderr = os.Stderr
 
 	return cmd
+}
+
+func usage() {
+	fmt.Fprintln(os.Stderr, "envjson: usage: echo JSON | envjson child")
+	os.Exit(ExitFatal)
 }

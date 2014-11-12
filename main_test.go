@@ -77,6 +77,29 @@ func TestWithBrokenJson(t *testing.T) {
 	}
 }
 
+func TestWithoutChild(t *testing.T) {
+	stdin := bytes.NewBuffer([]byte(`{"FOO":"BAR","HOGE":"FUGA"}`))
+	stdout := new(bytes.Buffer)
+	stderr := new(bytes.Buffer)
+
+	exitStatus, err := runCommand(stdin, stdout, stderr, "./envjson")
+	if err != nil {
+		t.Fatalf("failed to run command: %s", err)
+	}
+
+	if bytes.Compare([]byte(""), stdout.Bytes()) != 0 {
+		t.Fatal("stdout not matched")
+	}
+
+	if bytes.Compare([]byte("envjson: usage: echo JSON | envjson child\n"), stderr.Bytes()) != 0 {
+		t.Fatal("stderr not matched")
+	}
+
+	if exitStatus != 111 {
+		t.Fatal("exit status not matched")
+	}
+}
+
 func runCommand(stdin io.Reader, stdout io.Writer, stderr io.Writer, path string, args ...string) (int, error) {
 	cmd := exec.Command(path, args...)
 	cmd.Stdin = stdin
